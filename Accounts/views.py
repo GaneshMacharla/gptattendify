@@ -18,6 +18,7 @@ def signup_user(request):
         password2 = request.POST.get('confirm password')
         # Generate fingerprint and store
         fingerprint = generate_fingerprint(request)
+        print(fingerprint)
         if password1!=password2:
             messages.error(request,'passwords didnot match ')
             return redirect('../signup')
@@ -27,9 +28,11 @@ def signup_user(request):
             return redirect('../signup')
         else:
             try:
-                FingerPrint.objects.get(fingerprint=fingerprint)
-                messages.error(request, 'Someone has already registered with this device.')
-                return redirect('../signup')
+                fing_obj=FingerPrint.objects.get(fingerprint=fingerprint)
+                if fing_obj:
+                    messages.error(request, 'Someone has already registered with this device.')
+                    return redirect('../signup')
+                
             except FingerPrint.DoesNotExist:
                 user = User.objects.create_user(username, email, password1)
                 user.save()

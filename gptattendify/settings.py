@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-t28&yt@+kx7q)!pmmwf9oja0vg^g%sphsz%^h-qi&v43u3ojl9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -124,9 +125,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 AUTHENTCATION_BACKEND=['django.contrib.auth.backends.ModelBackend','Accounts.authentication.CustomAuthBackend']
-
 STATIC_URL='/static/'
 STATICFILES_DIRS=[
     os.path.join(BASE_DIR,'static/')
