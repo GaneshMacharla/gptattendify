@@ -137,5 +137,22 @@ def edit_profile_image(request):
     profile.image = request.FILES.get('image')
     profile.save()
     return redirect('user-profile-edit')  # Redirect to the user's profile page after image update
-
-
+def user_profile_edit_save(request):
+    fullname=request.POST.get('fullname')
+    phone=request.POST.get('phone')
+    address=request.POST.get('address')
+    if not is_valid_phone(phone):
+        messages.error(request,'phone number is invalid')
+        return redirect('user-profile-edit-save')
+    if len(fullname)==0:
+        messages.error(request,'name cannot be empty')
+        return redirect('user-profile-edit-save')
+    if len(address)==0:
+        messages.error(request,'address cannot be empty')
+        return redirect('user-profile-edit-save')
+    user=get_object_or_404(Profile,username=request.user)
+    user.fullname=fullname
+    user.phone=phone
+    user.address=address
+    user.save()
+    return redirect('index')
