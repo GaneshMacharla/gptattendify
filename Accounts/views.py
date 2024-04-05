@@ -1,32 +1,67 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
 from django.http import HttpRequest
 from django.http import JsonResponse
-from .models import FingerPrint
+from .models import FingerPrint,Profile
 from .utils import generate_fingerprint
-
+import re
+from django.contrib.auth.decorators import login_required
 # Create your views heref.
 
+
+def is_valid_email(email):
+    # Regular expression for basic email validation
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(email_regex, email)
+
+def is_valid_phone(phone):
+    phone_regex=r'^[7896]\d{9}$'
+    return re.match(phone_regex,phone)
 
 def signup_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
+        fullname=request.POST.get('fullname')
         email = request.POST.get('email')
-        password1 = request.POST.get('password')
-        password2 = request.POST.get('confirm password')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirmpassword')
+        phone=request.POST.get('phone')
+        address=request.POST.get('address')
         # Generate fingerprint and store
-        fingerprint = generate_fingerprint(request)
-        print(fingerprint)
-        if password1!=password2:
+        #fingerprint = generate_fingerprint(request)
+        if password!=confirm_password:
             messages.error(request,'passwords didnot match ')
             return redirect('../signup')
-        
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists.')
             return redirect('../signup')
-        else:
+        if User.objects.filter(email=email).exists():
+            messages.error(request,'email already exists')
+            return redirect('../signup')
+        if len(password)<5:
+            messages.error(request,'password is to short,please enter a valid password.')
+            return redirect('../signup')
+        if not is_valid_email(email):
+            messages.error(request,'email is invalid')
+            return redirect('../signup')
+        if not is_valid_phone(phone):
+            messages.error(request,'phone number is invalid')
+            return redirect('../signup')
+        user=User.objects.create_user(username,email,password)
+        user.save()
+        #store some more information about the user into the database
+        user_profile=Profile()
+        user_profile.username=user
+        user_profile.phone=phone
+        user_profile.address=address
+        user_profile.fullname=fullname
+        user_profile.save()
+        messages.success(request, 'Successfully registered.')
+        return redirect('../login')
+    
+        """else:
             try:
                 fing_obj=FingerPrint.objects.get(fingerprint=fingerprint)
                 if fing_obj:
@@ -41,40 +76,66 @@ def signup_user(request):
                 fingerprint_instance.fingerprint = fingerprint
                 fingerprint_instance.save()
                 messages.success(request, 'Successfully registered.')
-                return redirect('../login')      
-
+                return redirect('../login')"""
     else:
         return render(request,'Accounts/signup.html')
+    
 
 def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password') 
-        fingerprint = generate_fingerprint(request)
         print(username)
         print(password)
+        #fingerprint = generate_fingerprint(request)
         # Authenticate the user
         user = authenticate(username=username, password=password)
         print(user)
         if user is not None:
-            if FingerPrint.objects.filter(username=user, fingerprint=fingerprint).exists():
+            login(request,user)
+            messages.success(request,'sucessfully logged in')
+            return redirect('index')
+
+            """if FingerPrint.objects.filter(username=user, fingerprint=fingerprint).exists():
                 login(request, user)
                 messages.success(request, 'Successfully logged in')
                 return redirect('index')
             else:
                 messages.error(request, 'Your device is not recognized. Please log in from a recognized device.')
-                return redirect('login')
+                return redirect('login')"""
         else:
             # Authentication failed
             messages.error(request, 'Invalid username or password')
             return redirect('login')
+        
     else:
         # Method Not Allowed for non-POST requests
         return render(request, 'Accounts/login.html')
 
-
 def logout_user(request):
     logout(request)
     return redirect('index')
+
+@login_required
+def profile_view(request):
+    user_profile = get_object_or_404(Profile, username=request.user)
+    # Prepare the details to pass to the template
+    details = {'phone': user_profile.phone, 'address': user_profile.address, 'fullname': user_profile.fullname,'image':user_profile.image}
+    # Render the profile template with the details
+    return render(request, 'Accounts/user-profile.html', details)
+
+
+@login_required
+def profile_edit(request):
+    user=get_object_or_404(Profile,username=request.user)
+    details={'phone':user.phone,'address':user.address,'fullname':user.fullname,'image':user.image}
+    return render(request,'Accounts/user-profile-edit.html',details)
+
+@login_required
+def edit_profile_image(request):
+    profile =get_object_or_404(Profile,username=request.user)
+    profile.image = request.FILES.get('image')
+    profile.save()
+    return redirect('user-profile-edit')  # Redirect to the user's profile page after image update
 
 
