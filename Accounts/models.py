@@ -13,3 +13,8 @@ class Profile(models.Model):
     address=models.CharField(max_length=100)
     fullname=models.CharField(max_length=100)
     image=models.ImageField(upload_to='images/',default='images/avatar7.png')
+
+    def __str__(self) -> str:
+        return f'{self.username} profile'
+
+        

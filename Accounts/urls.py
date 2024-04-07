@@ -5,10 +5,9 @@ urlpatterns=[
     path('login/',views.login_user,name='login'),
     path('signup/',views.signup_user,name='signup'),
     path('logout/',views.logout_user,name='logout'),
-    path('user-profile-view/',views.profile_view,name='user-profile-view'),
-    path('user-profile-edit/',views.profile_edit,name="user-profile-edit"),
-    path('edit-profile-image/',views.edit_profile_image,name="edit-profile-image")
+    path('profile-view/',views.profile_view,name='profile-view'),
+    path('profile-update/',views.profile_update,name="profile-update"),
+    path('profile-picture-update/',views.profile_picture_update,name="profile-picture-update"),
+    path('profile-update-save/',views.profile_update_save,name="profile-update-save"),
 ]
-
-
 

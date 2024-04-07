@@ -85,8 +85,6 @@ def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password') 
-        print(username)
-        print(password)
         #fingerprint = generate_fingerprint(request)
         # Authenticate the user
         user = authenticate(username=username, password=password)
@@ -116,26 +114,48 @@ def logout_user(request):
     logout(request)
     return redirect('index')
 
-@login_required
+@login_required(redirect_field_name='login')
 def profile_view(request):
     user_profile = get_object_or_404(Profile, username=request.user)
+    print(user_profile.image)
     # Prepare the details to pass to the template
     details = {'phone': user_profile.phone, 'address': user_profile.address, 'fullname': user_profile.fullname,'image':user_profile.image}
     # Render the profile template with the details
-    return render(request, 'Accounts/user-profile.html', details)
+    return render(request, 'Accounts/profile.html', details)
 
 
-@login_required
-def profile_edit(request):
+@login_required(redirect_field_name='login')
+def profile_update(request):
     user=get_object_or_404(Profile,username=request.user)
     details={'phone':user.phone,'address':user.address,'fullname':user.fullname,'image':user.image}
-    return render(request,'Accounts/user-profile-edit.html',details)
+    return render(request,'Accounts/profileupdate.html',details)
 
-@login_required
-def edit_profile_image(request):
+@login_required(redirect_field_name='login')
+def profile_update_save(request):
+    fullname=request.POST.get('fullname')
+    phone=request.POST.get('phone')
+    address=request.POST.get('address')
+    if not is_valid_phone(phone):
+        messages.error(request,'phone number is invalid')
+        return redirect('profile-update-save')
+    if len(fullname)==0:
+        messages.error(request,'name cannot be empty')
+        return redirect('profile-update-save')
+    if len(address)==0:
+        messages.error(request,'address cannot be empty')
+        return redirect('profile-update-save')
+    
+    user=get_object_or_404(Profile,username=request.user)
+    user.fullname=fullname
+    user.phone=phone
+    user.address=address
+    user.save()
+    return redirect('index')
+
+@login_required(redirect_field_name='login')
+def profile_picture_update(request):
     profile =get_object_or_404(Profile,username=request.user)
     profile.image = request.FILES.get('image')
     profile.save()
-    return redirect('user-profile-edit')  # Redirect to the user's profile page after image update
-
+    return redirect('profile-view')  # Redirect to the user's profile page after image update
 
