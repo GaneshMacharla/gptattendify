@@ -118,6 +118,8 @@ def logout_user(request):
 def profile_view(request):
     user_profile = get_object_or_404(Profile, username=request.user)
     print(user_profile.image)
+    if not user_profile.image:
+        user_profile.image="images/avatar7.png"
     # Prepare the details to pass to the template
     details = {'phone': user_profile.phone, 'address': user_profile.address, 'fullname': user_profile.fullname,'image':user_profile.image}
     # Render the profile template with the details
@@ -127,6 +129,8 @@ def profile_view(request):
 @login_required(redirect_field_name='login')
 def profile_update(request):
     user=get_object_or_404(Profile,username=request.user)
+    if not user.image:
+        user.image="images/avatar7.png"
     details={'phone':user.phone,'address':user.address,'fullname':user.fullname,'image':user.image}
     return render(request,'Accounts/profileupdate.html',details)
 
@@ -150,7 +154,7 @@ def profile_update_save(request):
     user.phone=phone
     user.address=address
     user.save()
-    return redirect('index')
+    return redirect('profile-view')
 
 @login_required(redirect_field_name='login')
 def profile_picture_update(request):

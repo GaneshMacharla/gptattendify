@@ -148,8 +148,18 @@
       <!-- Your content goes here -->
       {% if user.is_authenticated %}
       <div class="content">
-        <a href="Accounts/logout">logout</a>
-        <p>{{user.username}}</p>
+        
+        <ul>
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="Attendance.html">Attendance</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../Accounts/profile-view">Profile</a>
+          </li>
+        </ul>
         <a href="Accounts/profile-view">
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="25"
             height="25" viewBox="0 0 256 256" xml:space="preserve">
@@ -176,12 +186,6 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="Accounts/login">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="Attendance.html">Attendance</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="Profile.html">Profile</a>
           </li>
         </ul>
       </div>
