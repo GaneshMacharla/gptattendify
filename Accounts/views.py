@@ -53,7 +53,7 @@ def signup_user(request):
         user.save()
         #store some more information about the user into the database
         user_profile=Profile()
-        user_profile.username=user
+        user_profile.user=user
         user_profile.phone=phone
         user_profile.address=address
         user_profile.fullname=fullname
@@ -88,7 +88,6 @@ def login_user(request):
         #fingerprint = generate_fingerprint(request)
         # Authenticate the user
         user = authenticate(username=username, password=password)
-        print(user)
         if user is not None:
             login(request,user)
             messages.success(request,'sucessfully logged in')
@@ -116,7 +115,7 @@ def logout_user(request):
 
 @login_required(redirect_field_name='login')
 def profile_view(request):
-    user_profile = get_object_or_404(Profile, username=request.user)
+    user_profile = get_object_or_404(Profile, user=request.user)
     print(user_profile.image)
     if not user_profile.image:
         user_profile.image="images/avatar7.png"
@@ -128,7 +127,7 @@ def profile_view(request):
 
 @login_required(redirect_field_name='login')
 def profile_update(request):
-    user=get_object_or_404(Profile,username=request.user)
+    user=get_object_or_404(Profile,user=request.user)
     if not user.image:
         user.image="images/avatar7.png"
     details={'phone':user.phone,'address':user.address,'fullname':user.fullname,'image':user.image}
@@ -149,7 +148,7 @@ def profile_update_save(request):
         messages.error(request,'address cannot be empty')
         return redirect('profile-update-save')
     
-    user=get_object_or_404(Profile,username=request.user)
+    user=get_object_or_404(Profile,user=request.user)
     user.fullname=fullname
     user.phone=phone
     user.address=address
@@ -158,7 +157,7 @@ def profile_update_save(request):
 
 @login_required(redirect_field_name='login')
 def profile_picture_update(request):
-    profile =get_object_or_404(Profile,username=request.user)
+    profile =get_object_or_404(Profile,user=request.user)
     profile.image = request.FILES.get('image')
     profile.save()
     return redirect('profile-view')  # Redirect to the user's profile page after image update

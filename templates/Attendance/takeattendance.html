@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance</title>
+    <style>
+        /* Container styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5dc;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Dropdown styling */
+        .branch,
+        .semester,
+        .subject,
+        .shift {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            font-size: 16px;
+            color: #333;
+            /* Gradient background */
+            background-image: linear-gradient(to bottom, #fff, #f2f2f2);
+            margin-bottom: 10px;
+            /* Added margin-bottom for spacing */
+        }
+
+        /* Dropdown arrow styling */
+        .dropdown-arrow,
+        .dropdown1-arrow,
+        .dropdown2-arrow {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            position: absolute;
+            right: 10px;
+            top: calc(50% - 4px);
+            pointer-events: none;
+            color: #be13d4;
+        }
+
+        .attendance {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            max-width: 1000px;
+            max-height: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+
+        .generate-code {
+            max-width: 200px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            height: 40px;
+            background-color: #4aa7e6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            display: block;
+            /* Make the button a block element */
+            text-align: center;
+            position: relative;
+            top: 10px;
+
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Button hover effect */
+        .generate-code:hover {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            background-color: #4b4fd1;
+            /* Darker green on hover */
+        }
+
+        /* Select option styling */
+        .branch option,
+        .semester option,
+        .subject option,
+        .shift option {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            background-color: #1bc8db;
+            color: #df15b7;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="attendance">
+        <div class="form-area">
+            <form action="../Attendance/generate-code" method="POST">
+                {% csrf_token %}
+                <h2>Attendance</h2>
+                <label
+                    for="branch">Branch:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select class="branch" name="branch">
+                    <option value="CSE" name="branch">CSE</option>
+                    <option value="ECE" name="ece">ECE</option>
+                </select>
+                <br><br>
+                <label for="semester">Semester:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select class="semester" name="semester">
+                    <option value="I" name="I">I</option>
+                    <option value="II" name="II">II</option>
+                    <option value="III" name="III">III</option>
+                    <option value="IV" name="IV">IV</option>
+                    <option value="V" name="V">V</option>
+                    <option value="VI" name="VI">VI</option>
+                </select>
+                <br><br>
+                <label
+                    for="shift">Shift:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select class="shift" name="shift">
+                    <option value="shift1" name="shift 1">Shift 1</option>
+                    <option value="shift2" name="shift 2">Shift 2</option>
+                </select>
+                <br><br>
+                <label for="subject">Subject name:</label>&nbsp;&nbsp;
+                <select class="subject" name="subject">
+                    <option value="option1" name="Sub1">Sub1</option>
+                    <option value="option2" name="Sub2">Sub2</option>
+                    <option value="option3" name="Sub3">Sub3</option>
+                    <option value="option4" name="Sub4">Sub4</option>
+                    <option value="option5" name="Sub5">Sub5</option>
+                    <option value="option6" name="Sub1">Sub1</option>
+                    <option value="option7" name="Sub2">Sub2</option>
+                    <option value="option8" name="Sub3">Sub3</option>
+                    <option value="option9" name="Sub4">Sub4</option>
+                    <option value="option10" name="Sub5">Sub5</option>
+                </select>
+                <br><br>
+                <!--code generation button-->
+                {% if code is None%}
+                <button type="submit" class="generate-code">Generate Code</button>
+                {% endif %}
+
+            </form>
+            <div class="display-code-area">
+                {% if code is not None and  remaining_time is not None %}
+                <div class="displaycode">
+                    <p>Code: {{ code.code }}</p>
+
+                </div>
+                <div class="display-timer">
+                    <p>Expiry Time: {{ code.expiry_time|time:"H:i" }}</p><span id="expiry-timer"></span>
+                </div>
+                <div class="show-attendance-status">
+                    <a href="../Attendance/show-attendance-status"><button
+                            class="attendace-status generate-code">show attendance status</button></a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Your function call here
+            changeSubject();
+        });
+
+        // Define an array to store subjects for each semester
+        const cseBranch = [];
+        // Semester I subjects
+        const semester1 = [
+            "HU-101 Basic English",
+            "SC-102 Basic Engineering Mathematics",
+            "SC-103 Basic Physics",
+            "SC-104 General Engineering Chemistry & Environmental Studies",
+            "EC-105 Basic Electrical & Electronics Engineering",
+            "ME-106 Basic Engineering Drawing",
+            "ME-107 Basic AutoCAD Lab",
+            "EC-108 Basic Electrical & Electronics Engineering Lab",
+            "SC-109 Basic Science Lab",
+            "CS-110 Basic Computer Science Lab",
+            "CS-111 Skill Upgradation"
+        ];
+
+        // Semester II subjects
+        const semester2 = [
+            "HU-201 Advanced English",
+            "SC-202 Engineering Mathematics",
+            "SC-203 Applied Physics",
+            "SC-204 Engineering Chemistry & Environmental Studies",
+            "CS-205 Programming In C",
+            "ME-206 Advanced Engineering Drawing",
+            "ME-207 Advanced AutoCAD Lab",
+            "CS-208 Basic Animation Lab",
+            "SC-209 Applied Science Lab",
+            "CS-210 Programming in C Lab",
+            "CS-211 Skill Upgradation"
+        ];
+
+        // Semester III subjects
+        const semester3 = [
+            "SC-301 Applied Engineering Mathematics",
+            "EC-302 Digital Electronics",
+            "CS-303 Computer Architecture",
+            "CS-304 Data Structures Through C",
+            "CS-305 Oops Through C++",
+            "CS-306 Data Structures Through C Lab",
+            "CS-307 C++ Lab",
+            "CS-308 Digital Electronics Lab",
+            "CS-309 Multimedia Technologies Lab",
+            "HU-310 Communication and Life Skills Lab",
+            "CS-311 Skill Upgradation"
+        ];
+
+        // Semester IV subjects
+        const semester4 = [
+            "SC-401 Advanced Engineering Mathematics",
+            "CS-402 Relational Database Management Systems",
+            "CS-403 Java Programming",
+            "CS-404 Computer Hardware & Ntetworking",
+            "CS-405 Operating Systems",
+            "CS-406 Relational Database Management Systems Lab",
+            "CS-407 Java Programming Lab",
+            "CS-408 Computer Hardware & Networking Lab",
+            "CS-409 Micro Processors Lab",
+            "HU-410 Employability Skills Lab",
+            "CS-411 Skill Upgradation"
+        ];
+
+        // Semester V subjects
+        const semester5 = [
+            "CS-502 Web Designing",
+            "CS-503 Python Programming",
+            "CS-574 .Net Programming Through C#",
+            "CS-506 Web Designing Lab",
+            "CS-507 Python Programming Lab",
+            "CS-584 Android Programming",
+            "CS-575 Artificial Intelligence",
+            "CS-509 System Administration Lab",
+            "CS-510 Project Work",
+            "CS-511 Skill Upgradation"
+        ];
+
+        // Semester VI subjects
+        const semester6 = [
+            "Industrial Training (CS-601)"
+        ];
+
+        // Add all semesters to the array
+        cseBranch.push(semester1, semester2, semester3, semester4, semester5, semester6);
+
+        const branch = document.querySelector(".branch");
+        const semester = document.querySelector(".semester");
+        const subject = document.querySelector(".subject");
+        semester.addEventListener("change", changeSubject);
+
+        function changeTheValueOfSubject(sem) {
+            for (var i = 0; i < subject.options.length; i++) {
+                var sub = subject.options[i];
+                sub.textContent = cseBranch[sem][i];
+            }
+        }
+
+        function changeSubject() {
+
+            if (branch.value == "CSE") {
+                if (semester.value === "I") {
+                    changeTheValueOfSubject(0);
+                }
+                else if (semester.value === "II") {
+                    changeTheValueOfSubject(1);
+                }
+                else if (semester.value === "III") {
+                    changeTheValueOfSubject(2);
+                } else if (semester.value === "IV") {
+                    changeTheValueOfSubject(3);
+                }
+                else if (semester.value === "V") {
+                    changeTheValueOfSubject(4);
+                }
+                else {
+                    changeTheValueOfSubject(5);
+                }
+            }
+        }
+        // Convert remaining_time from Django timedelta to JavaScript milliseconds
+        var remainingTime = 0; // Default value
+        {% if remaining_time %}
+        remainingTime = {{ remaining_time.total_seconds }} * 1000;
+        {% endif %}
+        // Update the timer every second
+        var countdownTimer = setInterval(function () {
+            remainingTime -= 1000;
+            if (remainingTime <= 0) {
+                clearInterval(countdownTimer);
+                document.getElementById("expiry-timer").textContent = "Expired";
+            } else {
+                // Update the timer as before
+                var minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                document.getElementById("expiry-timer").textContent = minutes + "m " + seconds + "s";
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>
