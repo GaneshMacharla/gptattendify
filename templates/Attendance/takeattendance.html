@@ -103,7 +103,7 @@
 <body>
     <div class="attendance">
         <div class="form-area">
-            <form action="../Attendance/generate-code" method="POST">
+            <form action="../Attendance/generate-code/" method="POST">
                 {% csrf_token %}
                 <h2>Attendance</h2>
                 <label
@@ -137,11 +137,11 @@
                     <option value="option3" name="Sub3">Sub3</option>
                     <option value="option4" name="Sub4">Sub4</option>
                     <option value="option5" name="Sub5">Sub5</option>
-                    <option value="option6" name="Sub1">Sub1</option>
-                    <option value="option7" name="Sub2">Sub2</option>
-                    <option value="option8" name="Sub3">Sub3</option>
-                    <option value="option9" name="Sub4">Sub4</option>
-                    <option value="option10" name="Sub5">Sub5</option>
+                    <option value="option6" name="Sub6">Sub6</option>
+                    <option value="option7" name="Sub7">Sub7</option>
+                    <option value="option8" name="Sub8">Sub8</option>
+                    <option value="option9" name="Sub9">Sub9</option>
+                    <option value="option10" name="Sub10">Sub10</option>
                 </select>
                 <br><br>
                 <!--code generation button-->
@@ -160,7 +160,7 @@
                     <p>Expiry Time: {{ code.expiry_time|time:"H:i" }}</p><span id="expiry-timer"></span>
                 </div>
                 <div class="show-attendance-status">
-                    <a href="../Attendance/show-attendance-status"><button
+                    <a href="./Account/profile-view"><button
                             class="attendace-status generate-code">show attendance status</button></a>
                 </div>
                 {% endif %}
@@ -168,12 +168,12 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
+    <script type="text/javascript" defer>
 
         document.addEventListener("DOMContentLoaded", function () {
             // Your function call here
             changeSubject();
-        });
+        }); 
 
         // Define an array to store subjects for each semester
         const cseBranch = [];
@@ -268,6 +268,7 @@
             for (var i = 0; i < subject.options.length; i++) {
                 var sub = subject.options[i];
                 sub.textContent = cseBranch[sem][i];
+                sub.value = cseBranch[sem][i];
             }
         }
 
@@ -313,5 +314,4 @@
         }, 1000);
     </script>
 </body>
-
 </html>

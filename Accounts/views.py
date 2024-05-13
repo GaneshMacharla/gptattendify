@@ -8,6 +8,7 @@ from .models import FingerPrint,Profile
 from .utils import generate_fingerprint
 import re
 from django.contrib.auth.decorators import login_required
+from Attendance.models import UserDetails
 # Create your views heref.
 
 
@@ -31,6 +32,8 @@ def signup_user(request):
         address=request.POST.get('address')
         # Generate fingerprint and store
         #fingerprint = generate_fingerprint(request)
+        
+        #check edge cases for user details
         if password!=confirm_password:
             messages.error(request,'passwords didnot match ')
             return redirect('../signup')
@@ -116,11 +119,11 @@ def logout_user(request):
 @login_required(redirect_field_name='login')
 def profile_view(request):
     user_profile = get_object_or_404(Profile, user=request.user)
-    print(user_profile.image)
+    users=UserDetails.objects.filter(user=request.user)
     if not user_profile.image:
         user_profile.image="images/avatar7.png"
     # Prepare the details to pass to the template
-    details = {'phone': user_profile.phone, 'address': user_profile.address, 'fullname': user_profile.fullname,'image':user_profile.image}
+    details = {'phone': user_profile.phone, 'address': user_profile.address, 'fullname': user_profile.fullname,'image':user_profile.image,'codes':users}
     # Render the profile template with the details
     return render(request, 'Accounts/profile.html', details)
 

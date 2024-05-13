@@ -1,3 +1,6 @@
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,7 +21,9 @@
         .branch,
         .semester,
         .subject,
-        .shift,.pin,.code {
+        .shift,
+        .pin,
+        .code {
             font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
             width: 200px;
             padding: 10px;
@@ -71,8 +76,8 @@
             display: block;
             /* Make the button a block element */
             text-align: center;
-            position:relative;
-            top:10px;
+            position: relative;
+            top: 10px;
         }
 
         a {
@@ -95,36 +100,49 @@
             background-color: #1bc8db;
             color: #df15b7;
         }
-        .pin,.code{
-            width:179px;
+
+        .pin,
+        .code {
+            width: 179px;
         }
     </style>
 
 </head>
 
 <body>
+    <div class="messages-area">
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Message:</strong> {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
     <div class="attendance">
         <h2>Attendance</h2>
         <div class="form-area">
-            <form action="../Attendance/mark-attendance-validation/" method="POST">
+            <form action="../attendance-validation/" method="POST">
                 {% csrf_token %}
 
-                <label for="pin">Username :</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <input type="text" title="Enter username of your Lecturer" name="username" placeholder="username" class="pin" required/>
+                <label for="username">Username :</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="text" title="Enter username of your Lecturer" name="username" placeholder="username"
+                    class="pin" required />
                 <br>
                 <br>
-                <label for="pin">Pin :</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <input type="text" name="pin" placeholder="22001-CS-102" class="pin" required/>
+                <label for="pin">Pin
+                    :</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="text" name="pin" placeholder="22001-CS-102" class="pin" required />
                 <br>
                 <br>
-                <label for="branch">Branch:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <select class="branch">
+                <label
+                    for="branch">Branch:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select class="branch" name="branch">
                     <option value="CSE" name="cse">CSE</option>
                     <option value="ECE" name="ece">ECE</option>
                 </select>
                 <br><br>
                 <label for="semester">Semester:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <select class="semester">
+                <select class="semester" name="semester">
                     <option value="I" name="I">I</option>
                     <option value="II" name="II">II</option>
                     <option value="III" name="III">III</option>
@@ -135,58 +153,41 @@
                 <br><br>
                 <label
                     for="shift">Shift:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <select class="shift">
-                    <option value="option1">Shift 1</option>
-                    <option value="option2">Shift 2</option>
+                <select class="shift" name="shift">
+                    <option value="shift1">Shift 1</option>
+                    <option value="shift2">Shift 2</option>
                 </select>
                 <br><br>
                 <label for="subject">Subject name:</label>&nbsp;&nbsp;
-                <select class="subject">
+                <select class="subject" name="subject">
                     <option value="option1" name="Sub1">Sub1</option>
                     <option value="option2" name="Sub2">Sub2</option>
                     <option value="option3" name="Sub3">Sub3</option>
                     <option value="option4" name="Sub4">Sub4</option>
                     <option value="option5" name="Sub5">Sub5</option>
-                    <option value="option6" name="Sub1">Sub1</option>
-                    <option value="option7" name="Sub2">Sub2</option>
-                    <option value="option8" name="Sub3">Sub3</option>
-                    <option value="option9" name="Sub4">Sub4</option>
-                    <option value="option10" name="Sub5">Sub5</option>
+                    <option value="option6" name="Sub6">Sub6</option>
+                    <option value="option7" name="Sub7">Sub7</option>
+                    <option value="option8" name="Sub8">Sub8</option>
+                    <option value="option9" name="Sub9">Sub9</option>
+                    <option value="option10" name="Sub10">Sub10</option>
                 </select>
-               
+
                 <br><br>
                 <label for="code">Code :</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <input type="text" placeholder="Enter code" name ="code" class="code" required/>
+                <input type="text" placeholder="Enter code" name="code" class="code" required />
                 <br>
                 <br>
-        <!-- code generation button -->
-        <div class="display-code-area">
-            {% if code is not None %}
-
-            {% if remaining_time is not None %}
-            <div class="displaycode">
-                <p>Code: {{ code.code }}</p>
-
-            </div>
-            <div class="display-timer">
-                <p>Expiry Time: {{ code.expiry_time|time:"H:i" }}</p>
-                <span id="expiry-timer"></span>
-            </div>
-            {% endif %}
-
-            {% else %}
-        </div>
-        <button type="submit" class="generate-code">Mark Your Attendance</button>
-        {% endif %}
+                <!--  mark your attendance -->
+                <button type="submit" class="generate-code">Mark Your Attendance</button>
             </form>
         </div>
-        
+
     </div>
-    <script type="text/javascript">
+    <script type="text/javascript" defer>
 
         document.addEventListener("DOMContentLoaded", function () {
             // Your function call here
-            changeSubject();
+            changeSubject();    
         });
 
         // Define an array to store subjects for each semester
@@ -277,7 +278,7 @@
             for (var i = 0; i < subject.options.length; i++) {
                 var sub = subject.options[i];
                 sub.textContent = cseBranch[sem][i];
-                sub.value=cseBranch[sem][i];
+                sub.value = cseBranch[sem][i];
             }
         }
 
@@ -303,6 +304,7 @@
                 }
             }
         }
-        </script>
+    </script>
 </body>
+
 </html>
