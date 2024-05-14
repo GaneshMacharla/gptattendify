@@ -124,10 +124,12 @@ form .input-box span.details{
  .container{
   max-width: 100%;
 }
+
 form .user-details .input-box{
     margin-bottom: 15px;
     width: 100%;
   }
+  
   form .category{
     width: 100%;
   }
@@ -135,6 +137,7 @@ form .user-details .input-box{
     max-height: 300px;
     overflow-y: scroll;
   }
+  
   .user-details::-webkit-scrollbar{
     width: 50px;
   }

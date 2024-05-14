@@ -65,21 +65,21 @@
         .shadow-none {
             box-shadow: none!important;
         }
+        .list-group-item {
+          list-style: decimal; /* or any other style you prefer */
+          margin-left:40px;
+      }
+      a{
+        text-decoration: none;
+      }
+      
     </style>
 </head>
 <body>
     <div class="container">
         <div class="main-body">
         
-              <!-- Breadcrumb -->
-              <nav aria-label="breadcrumb" class="main-breadcrumb">
-                <ol class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                  <li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">User Profile</li>
-                </ol>
-              </nav>
-              <!-- /Breadcrumb -->
+            
               <div class="row gutters-sm">
                 <div class="col-md-4 mb-3">
                   <div class="card">
@@ -142,6 +142,20 @@
                 </div>
               </div>
             </div>
+            <div class="generated-code-area" style="margin-left:1rem;">
+              <div class="mt-5"></div>
+            <h2>Generated codes:</h2>
+            
+            <div class="card" style="max-width: 50rem; max-height:50rem;">
+              <ol class="list-group list-group-flush">
+                {% for code in codes %}
+                <a href="{% url 'show-attendance-status' code.code %}"><li class="list-group-item">{{ code.code }} &nbsp; &nbsp; &nbsp; &nbsp;{{ code.created_date }}</li></a>
+              
+                {% endfor %}
+              </ol>
+              
+            </div> 
+            </div> 
         </div>
 </body>
 </html>
